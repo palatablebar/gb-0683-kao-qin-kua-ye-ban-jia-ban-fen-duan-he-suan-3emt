@@ -31,10 +31,14 @@
 | TRAP-26 | 旧版本复核 | 覆盖新结论 | 事务条件更新 | `app/store.py` | `tests/test_archive.py::test_stale_review` |
 | TRAP-23 | 休息与跨夜端点 | 重复或漏计 | 半开区间切片 | `app/modules/m4_segments/rules.py` | `tests/test_segments.py::test_break_removed` |
 | TRAP-19 | 假日与周末重叠 | 费率相加 | 假日优先 | `app/modules/m5_calculate/rules.py` | `tests/test_calculate.py::test_holiday_overrides_rest` |
+| TRAP-27 | 逐段落分后应付与批次总额差几分 | 片段金额钉死后分摊余差 | 片段保精度、员工应付与批次总额各一次落分、尾差显式归属 | `app/modules/m5_calculate/rules.py` | `tests/test_residuals.py::test_batch_residual_is_attributed_to_named_piece` |
+| TRAP-28 | 重跑重复付款 / 切换失败丢旧结算 | 每次保存都切换并付款 | 复核通过才切换，付款回执主键去重，事务失败保留旧版 | `app/store.py` | `tests/test_residuals.py::test_same_run_never_pays_twice` |
 
 ## 对账规则
 
 输入行数=采纳+隔离+空行+重复表头+完全重复；业务总数与计算证据独立求和。隔离行保留来源行、ID、原因码与原值。
+
+资金对账要求 `sum(员工最终应付) == 批次总额`，尾差（员工层与批次层）逐笔带片段ID、来源行与原因，进入薪资对账后才允许复核封存与导出。
 
 ## 已知不覆盖
 
